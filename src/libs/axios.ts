@@ -1,10 +1,11 @@
-import axios from 'axios'
+import Axios from 'axios'
  
-export  const axiosApi = axios.create({
+const axios = Axios.create({
     baseURL: 'http://localhost:8000',
     headers: {
         'X-Requested-With': 'XMLHttpRequest',
     },
     withCredentials: true,
 })
-
+ 
+export default axios

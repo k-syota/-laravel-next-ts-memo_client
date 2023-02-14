@@ -1,8 +1,8 @@
 import type { NextPage } from 'next';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { RequiredMark } from '../components/RequiredMark';
 import { AxiosError, AxiosResponse } from 'axios';
-import { axiosApi } from '@/libs/axios';
+import axios from '@/libs/axios';
 import { useRouter } from 'next/router';
 
 // POSTデータの型
@@ -36,12 +36,12 @@ const Home: NextPage = () => {
   
   // ログイン
   const login = () => {
-    axiosApi
+    axios
       // CSRF保護の初期化
       .get('/sanctum/csrf-cookie')
       .then((res) => {
         // ログイン処理
-        axiosApi
+        axios
           .post('/api/login', loginForm)
           .then((response: AxiosResponse) => {
             console.log(response.data);
@@ -52,6 +52,9 @@ const Home: NextPage = () => {
           });
       });
   };
+
+  console.log(loginForm)
+  
   return (
     <div className='w-2/3 mx-auto py-24'>
       <div className='w-1/2 mx-auto border-2 px-12 py-16 rounded-2xl'>
