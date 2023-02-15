@@ -1,7 +1,54 @@
+import axios from '@/libs/axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import { ChangeEvent, useState } from 'react';
 import { RequiredMark } from '../../components/RequiredMark';
 
+// POSTデータの型
+type MemoForm = {
+  title: string;
+  body: string;
+};
+
 const Post: NextPage = () => {
+
+  const [memoForm, setMemoForm] = useState<MemoForm>({
+    title: '',
+    body: '',
+  });
+  const [validation, setValidation] = useState<MemoForm>({
+    title: '',
+    body: '',
+  });
+
+  const router = useRouter();
+
+  // POSTデータの更新
+  const updateMemoForm = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setMemoForm({ ...memoForm, [e.target.name]: e.target.value });
+  };
+
+  const createMemo = () => {
+    axios
+      // CSRF保護の初期化
+      .get('/sanctum/csrf-cookie')
+      .then((res) => {
+        // APIへのリクエスト
+        axios
+          .post('/api/memos', memoForm)
+          .then((response: AxiosResponse) => {
+            console.log(response.data);
+            router.push('/memos');
+          })
+          .catch((err: AxiosError) => {
+            console.log(err.response);
+          });
+      });
+  };
+
   return (
     <div className='w-2/3 mx-auto'>
       <div className='w-1/2 mx-auto mt-32 border-2 px-12 py-16 rounded-2xl'>
@@ -14,6 +61,8 @@ const Post: NextPage = () => {
           <input
             className='p-2 border rounded-md w-full outline-none'
             name='title'
+            value={memoForm.title}
+            onChange={updateMemoForm}
           />
         </div>
         <div className='mb-5'>
@@ -26,10 +75,14 @@ const Post: NextPage = () => {
             name='body'
             cols={30}
             rows={4}
+            value={memoForm.body}
+            onChange={updateMemoForm}
           />
         </div>
         <div className='text-center'>
-          <button className='bg-gray-700 text-gray-50 py-3 sm:px-20 px-10 mt-8 rounded-xl cursor-pointer drop-shadow-md hover:bg-gray-600'>
+          <button 
+            className='bg-gray-700 text-gray-50 py-3 sm:px-20 px-10 mt-8 rounded-xl cursor-pointer drop-shadow-md hover:bg-gray-600'
+            onClick={createMemo}>
             登録する
           </button>
         </div>
