@@ -4,6 +4,7 @@ import { RequiredMark } from '../components/RequiredMark';
 import { AxiosError, AxiosResponse } from 'axios';
 import axios from '@/libs/axios';
 import { useRouter } from 'next/router';
+import { useUserState } from '@/../atoms/UserAtom';
 
 // POSTデータの型
 type LoginForm = {
@@ -17,6 +18,8 @@ type Validation = LoginForm & { loginFailed: string };
 const Home: NextPage = () => {
 
   const router = useRouter();
+
+  const { setUser } = useUserState();
 
   // state定義
   const [loginForm, setLoginForm] = useState<LoginForm>({
@@ -45,6 +48,7 @@ const Home: NextPage = () => {
           .post('/api/login', loginForm)
           .then((response: AxiosResponse) => {
             console.log(response.data);
+            setUser(response.data.data);
             router.push('/memos');
           })
           .catch((err: AxiosError) => {

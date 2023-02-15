@@ -1,3 +1,4 @@
+import { useUserState } from '@/../atoms/UserAtom';
 import axios from '@/libs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import type { NextPage } from 'next';
@@ -9,36 +10,21 @@ type Memo = {
   body: string;
 };
 
-// const tempMemos: Memo[] = [
-//   {
-//     title: '仮のタイトル1',
-//     body: '仮のメモの内容1',
-//   },
-//   {
-//     title: '仮のタイトル2',
-//     body: '仮のメモの内容2',
-//   },
-//   {
-//     title: '仮のタイトル3',
-//     body: '仮のメモの内容3',
-//   },
-//   {
-//     title: '仮のタイトル4',
-//     body: '仮のメモの内容4',
-//   },
-//   {
-//     title: '仮のタイトル5',
-//     body: '仮のメモの内容5',
-//   },
-// ];
-
 const Memo: NextPage = () => {
   const router = useRouter();
+
+  const { user } = useUserState();
+
+  console.log(user);
 
   const [memos, setMemos] = useState<Memo[]>([]);
 
   // 初回レンダリング時にAPIリクエスト
   useEffect(() => {
+    if (!user) {
+      router.push('/');
+      return;
+    }
     axios
       .get('/api/memos')
       .then(
@@ -47,7 +33,7 @@ const Memo: NextPage = () => {
           setMemos(response.data.data);
         })
       .catch((err: AxiosError) => console.log(err.response));
-  }, []);
+    }, [user, router]);
 
   return (
     <div className='w-2/3 mx-auto mt-32'>
