@@ -1,8 +1,9 @@
+import { useUserState } from '@/../atoms/UserAtom';
 import axios from '@/libs/axios';
 import { AxiosError, AxiosResponse } from 'axios';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { RequiredMark } from '../../components/RequiredMark';
 
 // POSTデータの型
@@ -48,6 +49,16 @@ const Post: NextPage = () => {
           });
       });
   };
+
+  const { user } = useUserState();
+
+  useEffect(() => {
+    // ログイン中か判定
+    if (!user) {
+      router.push('/');
+      return;
+    }
+  }, [user, router]);
 
   return (
     <div className='w-2/3 mx-auto'>
